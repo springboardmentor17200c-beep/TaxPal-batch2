@@ -1,29 +1,32 @@
-// src/pages/Dashboard.jsx - FIXED (logout navigation)
+// src/pages/Dashboard.jsx - UPDATED with all features
 import { useState, useMemo } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Plus, DollarSign, TrendingUp, TrendingDown, Percent, Wallet } from 'lucide-react';
-import { useAuth } from "../context/AuthContext";
+import { Plus, DollarSign, TrendingUp, TrendingDown, Percent } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
+import { useTransactions } from '../hooks/useTransactions';
 import Sidebar from '../components/Sidebar';
 import DashboardCard from '../components/DashboardCard';
 import TransactionModal from '../components/TransactionModal';
 import TransactionList from '../components/TransactionList';
 import { IncomeExpenseChart, ExpenseBreakdownChart } from '../components/Charts';
-import { useTransactions } from '../hooks/useTransactions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import Success from '../components/Success';
 
 export default function Dashboard() {
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
-  const { logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
   
   const {
     transactions,
     monthlySummary,
     expenseBreakdown,
     isLoading,
+    error,
+    successMessage,
     addIncome,
     addExpense,
+    deleteTransaction,
+    clearSuccessMessage,
   } = useTransactions();
 
   const stats = useMemo(() => {
@@ -52,11 +55,6 @@ export default function Dashboard() {
     };
   }, [transactions]);
 
-    const handleLogout = () => {
-      logout();
-};
-
-
   if (isLoading && !transactions.length) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -67,13 +65,22 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-navy via-navy to-purple">
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar />
       
+      {successMessage && (
+        <Success
+          message={successMessage} 
+          onClose={clearSuccessMessage} 
+        />
+      )}
+
       <main className="ml-72 p-8">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-2xl font-semibold text-white">Dashboard</h1>
-            <p className="text-gray-400 mt-1">Welcome back, here's your financial overview</p>
+            <p className="text-gray-400 mt-1">
+              Welcome back, {user?.name || 'User'}! Here's your financial overview
+            </p>
           </div>
           
           <div className="flex gap-4">
@@ -93,6 +100,12 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
+
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg">
+            <p className="text-red-400 text-center">{error}</p>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <DashboardCard
@@ -145,7 +158,11 @@ export default function Dashboard() {
             </button>
           </div>
           
-          <TransactionList transactions={transactions.slice(0, 10)} />
+          <TransactionList 
+            transactions={transactions} 
+            onDelete={deleteTransaction}
+            isLoading={isLoading}
+          />
         </div>
       </main>
 
