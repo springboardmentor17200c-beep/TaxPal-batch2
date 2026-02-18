@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import * as authService from "../services/authService";
 
 const AuthContext = createContext(null);
 
@@ -7,30 +7,39 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
 
+  // Restore user if token exists
   useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
+    const restoreUser = async () => {
+      if (token && !user) {
+        try {
+          const userData = await authService.getCurrentUser();
+          setUser(userData);
+        } catch (error) {
+          logout();
+        }
+      }
+    };
+
+    restoreUser();
   }, [token]);
 
   const login = async (email, password) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await authService.login(email, password);
 
-      const mockUser = { id: 1, name: "Test User", email };
-      const mockToken = "token-" + Date.now();
-
-      setUser(mockUser);
-      setToken(mockToken);
+      localStorage.setItem("token", response.token);
+      setToken(response.token);
+      setUser(response.user);
 
       return { success: true };
     } catch (error) {
-      return { success: false };
+      return {
+        success: false,
+        error:
+          error.response?.data?.message || "Login failed",
+      };
     } finally {
       setIsLoading(false);
     }
@@ -39,37 +48,48 @@ export function AuthProvider({ children }) {
   const signup = async (email, password, name) => {
     setIsLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const response = await authService.register(
+        email,
+        password,
+        name
+      );
 
-      const mockUser = { id: 1, name, email };
-      const mockToken = "token-" + Date.now();
-
-      setUser(mockUser);
-      setToken(mockToken);
+      localStorage.setItem("token", response.token);
+      setToken(response.token);
+      setUser(response.user);
 
       return { success: true };
     } catch (error) {
-      return { success: false };
+      return {
+        success: false,
+        error:
+          error.response?.data?.message || "Signup failed",
+      };
     } finally {
       setIsLoading(false);
     }
   };
 
   const logout = () => {
-    setUser(null);
+    localStorage.removeItem("token");
     setToken(null);
-    navigate("/login");
+    setUser(null);
   };
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isLoading, login, signup, logout }}
+      value={{
+        user,
+        token,
+        isLoading,
+        login,
+        signup,
+        logout,
+      }}
     >
       {children}
     </AuthContext.Provider>
   );
 }
 
-export function useAuth() {
-  return useContext(AuthContext);
-}
+export const useAuth = () => useContext(AuthContext);

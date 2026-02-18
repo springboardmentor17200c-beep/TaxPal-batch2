@@ -1,4 +1,4 @@
-// src/components/Sidebar.jsx - FIXED
+// src/components/Sidebar.jsx
 import { NavLink } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -10,6 +10,7 @@ import {
   LogOut 
 } from 'lucide-react';
 import { useAuth } from "../context/AuthContext";
+import { useState } from 'react';
 
 const navigation = [
   { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
@@ -19,8 +20,9 @@ const navigation = [
   { name: 'Reports', to: '/reports', icon: FileText },
 ];
 
-export default function Sidebar({ onLogout }) {
-  const { user } = useAuth();
+export default function Sidebar() {
+  const { user, logout } = useAuth();
+  const [showProfile, setShowProfile] = useState(false);
 
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 glass-card m-4 flex flex-col">
@@ -49,24 +51,46 @@ export default function Sidebar({ onLogout }) {
         ))}
       </nav>
 
-      <div className="p-4 border-t border-white/10">
-        <div className="flex items-center gap-3 px-4 py-3">
+      {/* User Section */}
+      <div className="p-4 border-t border-white/10 relative">
+        <button
+          onClick={() => setShowProfile(!showProfile)}
+          className="flex items-center gap-3 px-4 py-3 w-full hover:bg-white/5 rounded-lg transition-colors"
+        >
           <div className="w-8 h-8 rounded-full bg-gradient-to-r from-accent to-purple-500 flex items-center justify-center">
             <User className="w-4 h-4 text-white" />
           </div>
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 text-left">
             <p className="text-sm font-medium text-white truncate">
               {user?.name || 'User'}
             </p>
-            <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+            <p className="text-xs text-gray-400 truncate">
+              {user?.email}
+            </p>
           </div>
-          <button
-            onClick={onLogout}
-            className="p-2 hover:bg-white/10 rounded-lg transition-colors"
-          >
-            <LogOut className="w-4 h-4 text-gray-400" />
-          </button>
-        </div>
+        </button>
+
+        {showProfile && (
+          <div className="absolute bottom-20 left-4 right-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-4 space-y-2">
+            <p className="text-sm text-white font-medium">
+              {user?.name}
+            </p>
+            <p className="text-xs text-gray-300">
+              {user?.email}
+            </p>
+            <p className="text-xs text-gray-300">
+              {user?.phone || 'No phone added'}
+            </p>
+
+            <button
+              onClick={logout}
+              className="mt-3 flex items-center gap-2 text-red-400 text-sm hover:text-red-300"
+            >
+              <LogOut className="w-4 h-4" />
+              Logout
+            </button>
+          </div>
+        )}
       </div>
     </aside>
   );
