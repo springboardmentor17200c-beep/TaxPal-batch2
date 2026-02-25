@@ -22,5 +22,6 @@ router.post(
 router.get("/", controller.getAll);
 router.get("/summary", controller.summary);
 router.delete("/:id", controller.remove);
+router.post("/", auth, controller.create);
 
 module.exports = router;

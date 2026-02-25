@@ -34,6 +34,15 @@ const seed = async () => {
     },
   ]);
 
+  await Category.insertMany([
+    { name: "Salary", type: "income", isDefault: true },
+    { name: "Freelance", type: "income", isDefault: true },
+    { name: "Food", type: "expense", isDefault: true },
+    { name: "Rent", type: "expense", isDefault: true },
+    { name: "Utilities", type: "expense", isDefault: true },
+    { name: "Transport", type: "expense", isDefault: true },
+  ]);
+
   console.log("Seed complete");
   process.exit();
 };
