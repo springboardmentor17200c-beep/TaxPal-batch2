@@ -1,0 +1,8 @@
+###
+POST http://localhost:5000/api/tax/calculate
+Content-Type: application/json
+
+{
+  "country": "India",
+  "income": 800000
+}
