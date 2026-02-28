@@ -7,6 +7,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
         navy: '#0a0b1a',
         purple: '#1a1b2f',

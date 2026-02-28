@@ -1,69 +1,66 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import * as authService from "../services/authService";
+import { login as loginService, register as registerService, getCurrentUser } from "../services/authService";
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export function AuthProvider({ children }) {
+export const useAuth = () => useContext(AuthContext);
+
+export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token"));
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Restore user if token exists
   useEffect(() => {
-    const restoreUser = async () => {
-      if (token && !user) {
+    const checkAuthStatus = async () => {
+      const token = localStorage.getItem("token");
+      if (token) {
         try {
-          const userData = await authService.getCurrentUser();
+          const userData = await getCurrentUser();
           setUser(userData);
         } catch (error) {
-          logout();
+          console.error("Auth check failed:", error);
+          localStorage.removeItem("token");
         }
       }
+      setIsLoading(false);
     };
 
-    restoreUser();
-  }, [token]);
+    checkAuthStatus();
+  }, []);
 
   const login = async (email, password) => {
-    setIsLoading(true);
     try {
-      const response = await authService.login(email, password);
+      setIsLoading(true);
 
-      localStorage.setItem("token", response.token);
-      setToken(response.token);
-      setUser(response.user);
+      const data = await loginService(email, password);
+
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
 
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error:
-          error.response?.data?.message || "Login failed",
+        error: error.response?.data?.message || "Login failed",
       };
     } finally {
       setIsLoading(false);
     }
   };
 
-  const signup = async (email, password, name) => {
-    setIsLoading(true);
+  const register = async (email, password, name) => {
     try {
-      const response = await authService.register(
-        email,
-        password,
-        name
-      );
+      setIsLoading(true);
 
-      localStorage.setItem("token", response.token);
-      setToken(response.token);
-      setUser(response.user);
+      const data = await registerService(email, password, name);
+
+      localStorage.setItem("token", data.token);
+      setUser(data.user);
 
       return { success: true };
     } catch (error) {
       return {
         success: false,
-        error:
-          error.response?.data?.message || "Signup failed",
+        error: error.response?.data?.message || "Registration failed",
       };
     } finally {
       setIsLoading(false);
@@ -72,24 +69,12 @@ export function AuthProvider({ children }) {
 
   const logout = () => {
     localStorage.removeItem("token");
-    setToken(null);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        token,
-        isLoading,
-        login,
-        signup,
-        logout,
-      }}
-    >
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   );
-}
-
-export const useAuth = () => useContext(AuthContext);
+};

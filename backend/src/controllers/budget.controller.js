@@ -1,60 +1,61 @@
-const { validationResult } = require("express-validator");
-const budgetService = require("../services/budget.service");
+const Budget = require("../models/budget.model");
 
-exports.create = async (req, res, next) => {
+// @desc    Get all budgets for a user
+// @route   GET /api/budgets
+// @access  Private
+exports.getBudgets = async (req, res, next) => {
   try {
-    // 1️⃣ Validation check
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        message: "Validation failed",
-        errors: errors.array(),
-      });
-    }
-
-    const budget = await budgetService.createBudget(req.body, req.user);
-
-    res.status(201).json({
-      message: "Budget created successfully",
-      data: budget,
-    });
-  } catch (err) {
-    next(err);
+    const budgets = await Budget.find({ user: req.user });
+    res.status(200).json(budgets);
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.getAll = async (req, res, next) => {
+// @desc    Set or update a budget for a category
+// @route   POST /api/budgets
+// @access  Private
+exports.setBudget = async (req, res, next) => {
   try {
-    const { month } = req.query;
+    const { category, limit } = req.body;
 
-    if (!month) {
-      return res.status(400).json({
-        message: "Month query parameter is required (YYYY-MM)",
-      });
+    if (!category || limit === undefined) {
+      const error = new Error("Please provide category and limit");
+      error.statusCode = 400;
+      throw error;
     }
 
-    const budgets = await budgetService.getBudgetsWithProgress(
-      req.user,
-      month
+    // Upsert budget (update if exists, create if not)
+    const budget = await Budget.findOneAndUpdate(
+      { user: req.user, category },
+      { limit },
+      { new: true, upsert: true, runValidators: true }
     );
 
-    res.json({
-      month,
-      budgets,
-    });
-  } catch (err) {
-    next(err);
+    res.status(200).json(budget);
+  } catch (error) {
+    next(error);
   }
 };
 
-exports.remove = async (req, res, next) => {
+// @desc    Delete a budget
+// @route   DELETE /api/budgets/:id
+// @access  Private
+exports.deleteBudget = async (req, res, next) => {
   try {
-    await budgetService.deleteBudget(req.params.id, req.user);
-
-    res.json({
-      message: "Budget deleted successfully",
+    const budget = await Budget.findOneAndDelete({
+      _id: req.params.id,
+      user: req.user,
     });
-  } catch (err) {
-    next(err);
+
+    if (!budget) {
+      const error = new Error("Budget not found");
+      error.statusCode = 404;
+      throw error;
+    }
+
+    res.status(200).json({ message: "Budget removed" });
+  } catch (error) {
+    next(error);
   }
 };

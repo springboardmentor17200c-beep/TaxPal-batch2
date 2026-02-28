@@ -18,4 +18,13 @@ router.post(
   authController.login
 );
 
+const protect = require("../middlewares/auth.middleware");
+
+// 🔥 GET CURRENT USER
+router.get(
+  "/me",
+  protect,
+  authController.getCurrentUser
+);
+
 module.exports = router;

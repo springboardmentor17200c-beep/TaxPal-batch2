@@ -1,46 +1,16 @@
-const router = require("express").Router();
-const { body, query } = require("express-validator");
-const auth = require("../middlewares/auth.middleware");
-const controller = require("../controllers/budget.controller");
+const express = require("express");
+const router = express.Router();
+const {
+  getBudgets,
+  setBudget,
+  deleteBudget,
+} = require("../controllers/budget.controller");
+const protect = require("../middlewares/auth.middleware");
 
-router.use(auth);
+// Require authentication for all budget routes
+router.use(protect);
 
-router.post(
-  "/",
-  [
-    body("category")
-      .notEmpty()
-      .withMessage("Category is required")
-      .isMongoId()
-      .withMessage("Invalid category ID"),
-
-    body("month")
-      .notEmpty()
-      .withMessage("Month is required")
-      .matches(/^\d{4}-(0[1-9]|1[0-2])$/)
-      .withMessage("Month must be in YYYY-MM format"),
-
-    body("limit")
-      .notEmpty()
-      .withMessage("Limit is required")
-      .isFloat({ min: 0.01 })
-      .withMessage("Limit must be greater than 0"),
-  ],
-  controller.create
-);
-
-router.get(
-  "/",
-  [
-    query("month")
-      .notEmpty()
-      .withMessage("Month is required")
-      .matches(/^\d{4}-(0[1-9]|1[0-2])$/)
-      .withMessage("Month must be in YYYY-MM format"),
-  ],
-  controller.getAll
-);
-
-router.delete("/:id", controller.remove);
+router.route("/").get(getBudgets).post(setBudget);
+router.route("/:id").delete(deleteBudget);
 
 module.exports = router;

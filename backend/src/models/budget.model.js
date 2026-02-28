@@ -8,23 +8,19 @@ const budgetSchema = new mongoose.Schema(
       required: true,
     },
     category: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Category",
-      required: true,
-    },
-    month: {
       type: String,
       required: true,
     },
     limit: {
       type: Number,
       required: true,
-      min: 0.01,
+      min: 0,
     },
   },
   { timestamps: true }
 );
 
-budgetSchema.index({ user: 1, category: 1, month: 1 }, { unique: true });
+// Ensure a user can only have one budget per category
+budgetSchema.index({ user: 1, category: 1 }, { unique: true });
 
 module.exports = mongoose.model("Budget", budgetSchema);

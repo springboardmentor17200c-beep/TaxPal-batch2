@@ -62,22 +62,22 @@ export default function Login() {
     <div className="min-h-screen flex items-center justify-center p-4">
       <div className="glass-card w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">TaxPal</h1>
-          <p className="text-gray-400 mt-2">Welcome back</p>
+          <h1 className="text-3xl font-bold text-slate-900">TaxPal</h1>
+          <p className="text-slate-500 mt-2">Welcome back</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
 
           {/* Email */}
           <div>
-            <label className="block text-sm text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Email
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="input-field"
               placeholder="hello@example.com"
             />
             {errors.email && (
@@ -87,14 +87,14 @@ export default function Login() {
 
           {/* Password */}
           <div>
-            <label className="block text-sm text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-slate-700 mb-2">
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg text-white"
+              className="input-field"
               placeholder="••••••••"
             />
             {errors.password && (
@@ -113,14 +113,14 @@ export default function Login() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-lg"
+            className="btn-primary"
           >
             {isLoading ? <LoadingSpinner /> : 'Sign In'}
           </button>
 
-          <p className="text-center text-gray-400 text-sm">
+          <p className="text-center text-slate-500 text-sm mt-6">
             Don't have an account?{' '}
-            <Link to="/signup" className="text-indigo-400">
+            <Link to="/signup" className="text-indigo-600 font-semibold hover:text-indigo-700 transition-colors">
               Sign up
             </Link>
           </p>
