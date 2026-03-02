@@ -96,115 +96,122 @@ export default function Budgets() {
     const isLoading = isLoadingBudgets || isTxLoading;
 
     return (
-        <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-            <Sidebar />
-            <main className="ml-72 p-8">
+        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+            {/* Animated Background Blobs */}
+            <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-emerald-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
+            <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-violet-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
+            <div className="fixed bottom-[-20%] left-[20%] w-[40vw] h-[40vw] bg-amber-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-4000 pointer-events-none z-0"></div>
 
-                {successMsg && (
-                    <Success message={successMsg} onClose={() => setSuccessMsg('')} />
-                )}
+            <div className="relative z-10">
+                <Sidebar />
+                <main className="ml-72 p-8 relative z-10">
 
-                <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-slate-900 tracking-tight">Budgets</h1>
-                    <p className="text-slate-500 mt-1 text-sm font-medium">
-                        Set monthly limits and track your category spending.
-                    </p>
-                </div>
+                    {successMsg && (
+                        <Success message={successMsg} onClose={() => setSuccessMsg('')} />
+                    )}
 
-                {errorMsg && (
-                    <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2">
-                        <AlertCircle className="w-5 h-5 text-red-500" />
-                        <p className="text-red-500 text-sm font-medium">{errorMsg}</p>
+                    <div className="mb-8 animate-fade-in-up">
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm">Budgets</h1>
+                        <p className="text-slate-600 mt-2 text-sm font-semibold">
+                            Set monthly limits and track your category spending.
+                        </p>
                     </div>
-                )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    {/* Create/Edit Form */}
-                    <div className="lg:col-span-1">
-                        <div className="glass-card p-6 border border-slate-100 shadow-sm bg-white rounded-3xl">
-                            <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
-                                <DollarSign className="w-5 h-5 text-indigo-500" /> Set Budget Limit
-                            </h2>
-                            <form onSubmit={handleSubmit} className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
-                                    <input
-                                        type="text"
-                                        value={category}
-                                        onChange={(e) => setCategory(e.target.value)}
-                                        placeholder="e.g. Housing, Food, Transport"
-                                        className="input-field"
-                                        required
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-sm font-medium text-slate-700 mb-1">Monthly Limit ($)</label>
-                                    <input
-                                        type="number"
-                                        min="0"
-                                        step="0.01"
-                                        value={limit}
-                                        onChange={(e) => setLimit(e.target.value)}
-                                        placeholder="0.00"
-                                        className="input-field"
-                                        required
-                                    />
-                                </div>
-                                <button type="submit" className="btn-primary w-full">Save Budget</button>
-                            </form>
+                    {errorMsg && (
+                        <div className="mb-6 p-4 bg-red-500/20 border border-red-500/30 rounded-lg flex items-center gap-2">
+                            <AlertCircle className="w-5 h-5 text-red-500" />
+                            <p className="text-red-500 text-sm font-medium">{errorMsg}</p>
                         </div>
-                    </div>
+                    )}
 
-                    {/* Budget List and Progress tracking */}
-                    <div className="lg:col-span-2">
-                        <div className="glass-card p-6 border border-slate-100 shadow-sm bg-white rounded-3xl h-full">
-                            <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
-                                <Percent className="w-5 h-5 text-indigo-500" /> Category Progress
-                            </h2>
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-                            {isLoading ? (
-                                <div className="flex justify-center p-8"><LoadingSpinner /></div>
-                            ) : combinedBudgets.length === 0 ? (
-                                <div className="text-center p-8 text-slate-500 border border-dashed border-slate-200 rounded-xl">
-                                    No budgets set yet. Add one from the left to start tracking.
-                                </div>
-                            ) : (
-                                <div className="space-y-6">
-                                    {combinedBudgets.map(b => (
-                                        <div key={b._id} className="relative group">
-                                            <div className="flex justify-between items-end mb-2">
-                                                <div>
-                                                    <p className="font-semibold text-slate-800 capitalize">{b.category}</p>
-                                                    <p className="text-xs text-slate-500 mt-1">
-                                                        ${b.spent.toLocaleString()} spent of ${b.limit.toLocaleString()}
-                                                    </p>
+                        {/* Create/Edit Form */}
+                        <div className="lg:col-span-1 border-0">
+                            <div className="glass-card p-6 rounded-3xl animate-fade-in-up stagger-1">
+                                <h2 className="text-lg font-semibold text-slate-800 mb-4 flex items-center gap-2">
+                                    <DollarSign className="w-5 h-5 text-indigo-500" /> Set Budget Limit
+                                </h2>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                                        <input
+                                            type="text"
+                                            value={category}
+                                            onChange={(e) => setCategory(e.target.value)}
+                                            placeholder="e.g. Housing, Food, Transport"
+                                            className="input-field"
+                                            required
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-slate-700 mb-1">Monthly Limit ($)</label>
+                                        <input
+                                            type="number"
+                                            min="0"
+                                            step="0.01"
+                                            value={limit}
+                                            onChange={(e) => setLimit(e.target.value)}
+                                            placeholder="0.00"
+                                            className="input-field"
+                                            required
+                                        />
+                                    </div>
+                                    <button type="submit" className="btn-primary w-full">Save Budget</button>
+                                </form>
+                            </div>
+                        </div>
+
+                        {/* Budget List and Progress tracking */}
+                        <div className="lg:col-span-2 border-0">
+                            <div className="glass-card p-6 rounded-3xl h-full animate-fade-in-up stagger-2">
+                                <h2 className="text-lg font-semibold text-slate-800 mb-6 flex items-center gap-2">
+                                    <Percent className="w-5 h-5 text-indigo-500" /> Category Progress
+                                </h2>
+
+                                {isLoading ? (
+                                    <div className="flex justify-center p-8"><LoadingSpinner /></div>
+                                ) : combinedBudgets.length === 0 ? (
+                                    <div className="text-center p-8 text-slate-500 border border-dashed border-slate-200 rounded-xl">
+                                        No budgets set yet. Add one from the left to start tracking.
+                                    </div>
+                                ) : (
+                                    <div className="space-y-6">
+                                        {combinedBudgets.map(b => (
+                                            <div key={b._id} className="relative group">
+                                                <div className="flex justify-between items-end mb-2">
+                                                    <div>
+                                                        <p className="font-semibold text-slate-800 capitalize">{b.category}</p>
+                                                        <p className="text-xs text-slate-500 mt-1">
+                                                            ${b.spent.toLocaleString()} spent of ${b.limit.toLocaleString()}
+                                                        </p>
+                                                    </div>
+                                                    <button
+                                                        onClick={() => deleteBudget(b._id)}
+                                                        className="text-xs text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        Remove
+                                                    </button>
                                                 </div>
-                                                <button
-                                                    onClick={() => deleteBudget(b._id)}
-                                                    className="text-xs text-rose-500 opacity-0 group-hover:opacity-100 transition-opacity"
-                                                >
-                                                    Remove
-                                                </button>
-                                            </div>
 
-                                            {/* Progress Bar Container */}
-                                            <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden relative">
-                                                <div
-                                                    className={`absolute top-0 left-0 h-full rounded-full transition-all duration-500 ${b.isOver ? 'bg-rose-500' : (b.percentage > 85 ? 'bg-amber-400' : 'bg-emerald-400')}`}
-                                                    style={{ width: `${b.percentage}%` }}
-                                                />
+                                                {/* Progress Bar Container */}
+                                                <div className="w-full h-3 rounded-full bg-slate-100 overflow-hidden relative">
+                                                    <div
+                                                        className={`absolute top-0 left-0 h-full rounded-full transition-all duration-500 ${b.isOver ? 'bg-rose-500' : (b.percentage > 85 ? 'bg-amber-400' : 'bg-emerald-400')}`}
+                                                        style={{ width: `${b.percentage}%` }}
+                                                    />
+                                                </div>
+                                                {b.isOver && <p className="text-xs tracking-tight text-rose-500 mt-1 text-right">Limit exceeded!</p>}
                                             </div>
-                                            {b.isOver && <p className="text-xs tracking-tight text-rose-500 mt-1 text-right">Limit exceeded!</p>}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
 
-                </div>
-            </main>
+                    </div>
+                </main>
+            </div>
         </div>
     );
 }

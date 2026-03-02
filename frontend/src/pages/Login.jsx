@@ -59,10 +59,14 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="glass-card w-full max-w-md p-8">
+    <div className="min-h-screen ultra-bg flex items-center justify-center p-4 relative overflow-hidden selection:bg-indigo-300">
+      {/* Animated Background Blobs */}
+      <div className="absolute top-[-20%] left-[-10%] w-[60vw] h-[60vw] bg-indigo-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob pointer-events-none z-0"></div>
+      <div className="absolute bottom-[-20%] right-[-10%] w-[60vw] h-[60vw] bg-purple-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
+
+      <div className="glass-card w-full max-w-md p-8 relative z-10 animate-fade-in-up">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-slate-900">TaxPal</h1>
+          <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm pb-1">TaxPal</h1>
           <p className="text-slate-500 mt-2">Welcome back</p>
         </div>
 

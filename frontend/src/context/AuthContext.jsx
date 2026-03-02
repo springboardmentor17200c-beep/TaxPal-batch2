@@ -38,9 +38,17 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
+      let errorMessage = "Login failed";
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       return {
         success: false,
-        error: error.response?.data?.message || "Login failed",
+        error: errorMessage,
       };
     } finally {
       setIsLoading(false);
@@ -58,9 +66,17 @@ export const AuthProvider = ({ children }) => {
 
       return { success: true };
     } catch (error) {
+      let errorMessage = "Registration failed";
+      if (error.response?.data?.errors && error.response.data.errors.length > 0) {
+        errorMessage = error.response.data.errors[0].msg;
+      } else if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
       return {
         success: false,
-        error: error.response?.data?.message || "Registration failed",
+        error: errorMessage,
       };
     } finally {
       setIsLoading(false);

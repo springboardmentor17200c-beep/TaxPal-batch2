@@ -5,7 +5,7 @@ const {
   setBudget,
   deleteBudget,
 } = require("../controllers/budget.controller");
-const protect = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 
 // Require authentication for all budget routes
 router.use(protect);

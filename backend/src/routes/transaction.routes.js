@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { body } = require("express-validator");
-const auth = require("../middlewares/auth.middleware");
+const { protect: auth } = require("../middlewares/auth.middleware");
 const controller = require("../controllers/transaction.controller");
 
 router.use(auth);

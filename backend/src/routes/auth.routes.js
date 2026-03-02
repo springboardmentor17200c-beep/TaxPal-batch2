@@ -18,7 +18,7 @@ router.post(
   authController.login
 );
 
-const protect = require("../middlewares/auth.middleware");
+const { protect } = require("../middlewares/auth.middleware");
 
 // 🔥 GET CURRENT USER
 router.get(

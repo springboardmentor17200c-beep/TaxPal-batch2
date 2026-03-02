@@ -4,8 +4,10 @@ import { AuthProvider } from "./context/AuthContext";
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
+import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import TaxEstimator from './pages/TaxEstimator';
+import Reports from './pages/Reports';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -23,6 +25,14 @@ function App() {
           }
         />
         <Route
+          path="/transactions"
+          element={
+            <ProtectedRoute>
+              <Transactions />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path="/budgets"
           element={
             <ProtectedRoute>
@@ -35,6 +45,14 @@ function App() {
           element={
             <ProtectedRoute>
               <TaxEstimator />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Reports />
             </ProtectedRoute>
           }
         />

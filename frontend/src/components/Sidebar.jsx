@@ -25,7 +25,7 @@ export default function Sidebar() {
   const [showProfile, setShowProfile] = useState(false);
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-white/80 backdrop-blur-2xl border-r border-slate-200/50 flex flex-col premium-shadow z-50">
+    <aside className="fixed left-0 top-0 h-screen w-64 bg-white/40 backdrop-blur-3xl border-r border-white/60 flex flex-col shadow-[10px_0_30px_rgb(0,0,0,0.03)] z-50">
       <div className="p-6">
         <h1 className="text-2xl font-extrabold bg-gradient-to-r from-indigo-600 via-indigo-500 to-violet-500 bg-clip-text text-transparent drop-shadow-sm">
           TaxPal

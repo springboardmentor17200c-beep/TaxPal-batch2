@@ -12,7 +12,7 @@ export default {
       },
       colors: {
         navy: '#0a0b1a',
-        purple: '#1a1b2f',
+        'dark-purple': '#1a1b2f',
         accent: '#6366f1',
       },
       animation: {
