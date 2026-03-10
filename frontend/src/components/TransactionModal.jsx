@@ -81,7 +81,7 @@ export default function TransactionModal({ isOpen, onClose, onSubmit, type }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     // Mark all fields as touched
     const allTouched = {};
     Object.keys(formData).forEach(key => {
@@ -118,44 +118,43 @@ export default function TransactionModal({ isOpen, onClose, onSubmit, type }) {
   const isFormValid = Object.keys(validate()).length === 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in">
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      
-      <div className="relative glass-card w-full max-w-md p-6 animate-slide-up">
+    <div className="fixed inset-0 z-50 flex items-center justify-center animate-fade-in px-4">
+      <div className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onClick={onClose} />
+
+      <div className="relative bg-white/95 backdrop-blur-2xl w-full max-w-md p-8 rounded-3xl premium-shadow border border-white/50 animate-slide-up">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1 hover:bg-white/10 rounded-lg transition-colors"
+          className="absolute top-5 right-5 p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full transition-all active:scale-95"
         >
-          <X className="w-5 h-5 text-gray-400" />
+          <X className="w-5 h-5" />
         </button>
 
-        <h2 className={`text-xl font-semibold mb-4 ${type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
+        <h2 className={`text-2xl font-extrabold tracking-tight mb-8 ${type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
           Record {type === 'income' ? 'Income' : 'Expense'}
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Description <span className="text-red-400">*</span>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Description <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               onBlur={() => handleBlur('description')}
-              className={`w-full px-4 py-2 bg-white/5 border rounded-lg text-white input-focus ${
-                errors.description && touched.description ? 'border-red-400' : 'border-white/10'
-              }`}
+              className={`input-field ${errors.description && touched.description ? 'border-rose-500 ring-rose-500/20 focus:ring-rose-500/50 focus:border-rose-500' : ''
+                }`}
               placeholder="e.g., Monthly salary"
             />
             {errors.description && touched.description && (
-              <p className="mt-1 text-sm text-red-400">{errors.description}</p>
+              <p className="mt-1 text-xs font-medium text-rose-500">{errors.description}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Amount <span className="text-red-400">*</span>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Amount <span className="text-rose-500">*</span>
             </label>
             <input
               type="number"
@@ -165,71 +164,68 @@ export default function TransactionModal({ isOpen, onClose, onSubmit, type }) {
               value={formData.amount}
               onChange={(e) => handleChange('amount', e.target.value)}
               onBlur={() => handleBlur('amount')}
-              className={`w-full px-4 py-2 bg-white/5 border rounded-lg text-white input-focus ${
-                errors.amount && touched.amount ? 'border-red-400' : 'border-white/10'
-              }`}
+              className={`input-field ${errors.amount && touched.amount ? 'border-rose-500 ring-rose-500/20 focus:ring-rose-500/50 focus:border-rose-500' : ''
+                }`}
               placeholder="0.00"
             />
             {errors.amount && touched.amount && (
-              <p className="mt-1 text-sm text-red-400">{errors.amount}</p>
+              <p className="mt-1 text-xs font-medium text-rose-500">{errors.amount}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Category <span className="text-red-400">*</span>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Category <span className="text-rose-500">*</span>
             </label>
             <select
               value={formData.category}
               onChange={(e) => handleChange('category', e.target.value)}
               onBlur={() => handleBlur('category')}
-              className={`w-full px-4 py-2 bg-white/5 border rounded-lg text-white input-focus ${
-                errors.category && touched.category ? 'border-red-400' : 'border-white/10'
-              }`}
+              className={`input-field ${errors.category && touched.category ? 'border-rose-500 ring-rose-500/20 focus:ring-rose-500/50 focus:border-rose-500' : ''
+                }`}
             >
               <option value="">Select category</option>
               {categories.map((cat) => (
-                <option key={cat} value={cat} className="bg-navy">{cat}</option>
+                <option key={cat} value={cat} className="bg-white text-slate-900">{cat}</option>
               ))}
             </select>
             {errors.category && touched.category && (
-              <p className="mt-1 text-sm text-red-400">{errors.category}</p>
+              <p className="mt-1 text-xs font-medium text-rose-500">{errors.category}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
-              Date <span className="text-red-400">*</span>
+            <label className="block text-sm font-medium text-slate-700 mb-1">
+              Date <span className="text-rose-500">*</span>
             </label>
             <input
               type="date"
               value={formData.date}
               onChange={(e) => handleChange('date', e.target.value)}
               onBlur={() => handleBlur('date')}
-              className={`w-full px-4 py-2 bg-white/5 border rounded-lg text-white input-focus ${
-                errors.date && touched.date ? 'border-red-400' : 'border-white/10'
-              }`}
+              className={`input-field ${errors.date && touched.date ? 'border-rose-500 ring-rose-500/20 focus:ring-rose-500/50 focus:border-rose-500' : ''
+                }`}
             />
             {errors.date && touched.date && (
-              <p className="mt-1 text-sm text-red-400">{errors.date}</p>
+              <p className="mt-1 text-xs font-medium text-rose-500">{errors.date}</p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-1">
+            <label className="block text-sm font-medium text-slate-700 mb-1">
               Notes (optional)
             </label>
             <textarea
               value={formData.notes}
               onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               rows="3"
-              className="w-full px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-white input-focus"
+              className="input-field"
               placeholder="Add additional notes..."
             />
           </div>
 
           {errors.submit && (
-            <p className="text-sm text-red-400 text-center">{errors.submit}</p>
+            <p className="text-sm font-medium text-rose-500 text-center">{errors.submit}</p>
           )}
 
           <button

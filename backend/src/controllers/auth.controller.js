@@ -1,14 +1,13 @@
 const { validationResult } = require("express-validator");
 const authService = require("../services/auth.service");
 const { generateToken } = require("../utils/jwt");
-const User = require("../models/user.model");
 
-// 🔐 REGISTER
 exports.register = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
+    if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    }
 
     const user = await authService.registerUser(req.body);
     const token = generateToken(user._id);
@@ -28,15 +27,15 @@ exports.register = async (req, res, next) => {
   }
 };
 
-// 🔐 LOGIN
 exports.login = async (req, res, next) => {
   try {
     const errors = validationResult(req);
-    if (!errors.isEmpty())
+    if (!errors.isEmpty()) {
       return res.status(400).json({ errors: errors.array() });
+    }
 
     const user = await authService.loginUser(
-      req.body.email,
+      req.body.email.trim().toLowerCase(),
       req.body.password
     );
 
@@ -48,16 +47,15 @@ exports.login = async (req, res, next) => {
         id: user._id,
         name: user.name,
         email: user.email,
-        country: user.country,
-        income_bracket: user.income_bracket,
       },
     });
   } catch (err) {
     next(err);
   }
 };
+const User = require("../models/user.model");
 
-// 🔥 NEW — GET CURRENT USER (/auth/me)
+// 🔥 GET CURRENT USER (/auth/me)
 exports.getCurrentUser = async (req, res, next) => {
   try {
     const user = await User.findById(req.user).select("-password");

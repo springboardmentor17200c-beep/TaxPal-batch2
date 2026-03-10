@@ -1,7 +1,12 @@
 const Transaction = require("../models/transaction.model");
+const Category = require("../models/category.model");
 
-exports.createTransaction = async (data) => {
-  return await Transaction.create(data);
+
+exports.createTransaction = async (data, userId) => {
+  return await Transaction.create({
+    ...data,
+    user: userId
+  });
 };
 
 exports.getTransactions = async (userId, filters) => {
@@ -21,6 +26,7 @@ exports.getTransactions = async (userId, filters) => {
 
 exports.deleteTransaction = async (id, userId) => {
   const transaction = await Transaction.findOne({ _id: id, user: userId });
+
   if (!transaction) {
     const error = new Error("Transaction not found");
     error.statusCode = 404;

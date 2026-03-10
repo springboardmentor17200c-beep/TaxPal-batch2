@@ -34,18 +34,18 @@ const barOptions = {
     x: {
       grid: {
         display: false,
-        color: 'rgba(255,255,255,0.1)',
+        color: 'rgba(0,0,0,0.05)',
       },
       ticks: {
-        color: '#9CA3AF',
+        color: '#64748B',
       },
     },
     y: {
       grid: {
-        color: 'rgba(255,255,255,0.1)',
+        color: 'rgba(0,0,0,0.05)',
       },
       ticks: {
-        color: '#9CA3AF',
+        color: '#64748B',
       },
     },
   },
@@ -58,7 +58,7 @@ const pieOptions = {
     legend: {
       position: 'right',
       labels: {
-        color: '#9CA3AF',
+        color: '#475569',
         usePointStyle: true,
         pointStyle: 'circle',
       },
@@ -73,18 +73,20 @@ export function IncomeExpenseChart({ monthlyData }) {
       {
         label: 'Income',
         data: monthlyData?.income || Array(12).fill(0),
-        backgroundColor: 'rgba(34, 197, 94, 0.3)',
-        borderColor: 'rgb(34, 197, 94)',
+        backgroundColor: 'rgba(16, 185, 129, 0.8)',
+        borderColor: 'rgb(16, 185, 129)',
         borderWidth: 1,
         borderRadius: 4,
+        hoverBackgroundColor: 'rgba(16, 185, 129, 0.9)',
       },
       {
         label: 'Expenses',
         data: monthlyData?.expenses || Array(12).fill(0),
-        backgroundColor: 'rgba(239, 68, 68, 0.3)',
-        borderColor: 'rgb(239, 68, 68)',
+        backgroundColor: 'rgba(244, 63, 94, 0.8)',
+        borderColor: 'rgb(244, 63, 94)',
         borderWidth: 1,
         borderRadius: 4,
+        hoverBackgroundColor: 'rgba(244, 63, 94, 0.9)',
       },
     ],
   }), [monthlyData]);

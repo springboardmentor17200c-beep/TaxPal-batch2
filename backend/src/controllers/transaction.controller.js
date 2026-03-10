@@ -8,10 +8,10 @@ exports.create = async (req, res, next) => {
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
 
-    const transaction = await transactionService.createTransaction({
-      ...req.body,
-      user: req.user,
-    });
+    const transaction = await transactionService.createTransaction(
+      req.body,
+      req.user
+    );
 
     res.status(201).json(transaction);
   } catch (err) {
