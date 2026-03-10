@@ -12,6 +12,7 @@ const categoryRoutes = require("./routes/category.routes");
 const analyticsRoutes = require("./routes/analytics.routes");
 const taxRoutes = require("./routes/tax.routes");
 const reportRoutes = require("./routes/report.routes");
+const deadlineRoutes = require("./routes/deadline.routes");
 
 const app = express();
 
@@ -58,6 +59,7 @@ app.use("/api/budgets", budgetRoutes);
 app.use("/api/analytics", analyticsRoutes);
 app.use("/api/taxes", taxRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/deadlines", deadlineRoutes);
 
 // ✅ Error middleware
 app.use(errorMiddleware);

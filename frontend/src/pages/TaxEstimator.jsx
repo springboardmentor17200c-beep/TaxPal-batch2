@@ -27,7 +27,6 @@ export default function TaxEstimator() {
     }, [region, transactions]);
 
     const fetchTaxData = async () => {
-        if (transactions.length === 0) return;
         setIsLoading(true);
         try {
             const result = await estimateTax({ region, year: new Date().getFullYear() });

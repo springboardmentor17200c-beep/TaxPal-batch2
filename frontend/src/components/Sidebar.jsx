@@ -6,6 +6,7 @@ import {
   PieChart,
   Calculator,
   FileText,
+  Calendar as CalendarIcon,
   User,
   LogOut
 } from 'lucide-react';
@@ -18,6 +19,7 @@ const navigation = [
   { name: 'Budgets', to: '/budgets', icon: PieChart },
   { name: 'Tax Estimator', to: '/tax', icon: Calculator },
   { name: 'Reports', to: '/reports', icon: FileText },
+  { name: 'Calendar', to: '/calendar', icon: CalendarIcon },
 ];
 
 export default function Sidebar() {

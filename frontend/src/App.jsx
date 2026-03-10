@@ -8,6 +8,7 @@ import Transactions from './pages/Transactions';
 import Budgets from './pages/Budgets';
 import TaxEstimator from './pages/TaxEstimator';
 import Reports from './pages/Reports';
+import CalendarView from './pages/CalendarView';
 import ProtectedRoute from './components/ProtectedRoute';
 
 function App() {
@@ -53,6 +54,14 @@ function App() {
           element={
             <ProtectedRoute>
               <Reports />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/calendar"
+          element={
+            <ProtectedRoute>
+              <CalendarView />
             </ProtectedRoute>
           }
         />

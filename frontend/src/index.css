@@ -14,7 +14,8 @@
   }
 
   .premium-shadow {
-    @apply shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(99,102,241,0.15)] transition-all duration-500 ease-out;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    @apply transition-all duration-500 ease-out hover:shadow-indigo-500/10;
   }
 
   .input-field {
@@ -22,17 +23,19 @@
   }
 
   .btn-primary {
-    @apply w-full text-white bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 hover:bg-gradient-to-tl bg-size-200 animate-gradient-x focus:ring-4 focus:outline-none focus:ring-indigo-300 font-bold rounded-2xl text-sm px-6 py-4 text-center shadow-[0_0_20px_rgba(99,102,241,0.4)] hover:shadow-[0_0_30px_rgba(99,102,241,0.6)] hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98];
+    @apply w-full text-white bg-gradient-to-br from-indigo-500 via-purple-500 to-indigo-600 hover:bg-gradient-to-tl bg-size-200 animate-gradient-x focus:ring-4 focus:outline-none focus:ring-indigo-300 font-bold rounded-2xl text-sm px-6 py-4 text-center hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98];
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
   }
 
   .btn-secondary {
-    @apply w-full text-slate-700 bg-white/60 backdrop-blur-lg border border-white/50 hover:bg-white/80 hover:text-indigo-600 focus:ring-4 focus:outline-none focus:ring-slate-100 font-bold rounded-2xl text-sm px-6 py-4 text-center shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(99,102,241,0.1)] transition-all duration-300 active:scale-[0.98] hover:-translate-y-0.5;
+    @apply w-full text-slate-700 bg-white/60 backdrop-blur-lg border border-white/50 hover:bg-white/80 hover:text-indigo-600 focus:ring-4 focus:outline-none focus:ring-slate-100 font-bold rounded-2xl text-sm px-6 py-4 text-center transition-all duration-300 active:scale-[0.98] hover:-translate-y-0.5;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
   }
 
   .text-gradient {
     @apply bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-rose-500 animate-gradient-x bg-size-200;
   }
-  
+
   .bg-size-200 {
     background-size: 200% 200%;
   }
@@ -54,21 +57,47 @@
 
 /* Keyframes for ultra premium animations */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0px);
+  }
 }
 
 @keyframes gradient-x {
-  0%, 100% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
+
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
 }
 
 @keyframes blob {
-  0% { transform: translate(0px, 0px) scale(1); }
-  33% { transform: translate(30px, -50px) scale(1.1); }
-  66% { transform: translate(-20px, 20px) scale(0.9); }
-  100% { transform: translate(0px, 0px) scale(1); }
+  0% {
+    transform: translate(0px, 0px) scale(1);
+  }
+
+  33% {
+    transform: translate(30px, -50px) scale(1.1);
+  }
+
+  66% {
+    transform: translate(-20px, 20px) scale(0.9);
+  }
+
+  100% {
+    transform: translate(0px, 0px) scale(1);
+  }
 }
 
 .animate-float {
@@ -93,28 +122,81 @@
 
 /* Fade In Up */
 @keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in-up {
   animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.stagger-1 { animation-delay: 100ms; }
-.stagger-2 { animation-delay: 200ms; }
-.stagger-3 { animation-delay: 300ms; }
+.stagger-1 {
+  animation-delay: 100ms;
+}
+
+.stagger-2 {
+  animation-delay: 200ms;
+}
+
+.stagger-3 {
+  animation-delay: 300ms;
+}
+
+/* Shimmer effect for premium feel */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite;
+}
+
+/* Slide reveal animation */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.hover-scale {
+  @apply transition-transform duration-500 hover:scale-[1.02] active:scale-[0.98];
+}
 
 /* Dynamic mesh background */
 .ultra-bg {
   background-color: #f8fafc;
-  background-image: 
-    radial-gradient(at 40% 20%, hsla(250,100%,90%,1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(189,100%,90%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(333,100%,94%,1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsla(263,100%,93%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(22,100%,91%,1) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, hsla(240,100%,93%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 0%, hsla(343,100%,93%,1) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 40% 20%, hsla(250, 100%, 94%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(189, 100%, 94%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(333, 100%, 96%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, hsla(263, 100%, 95%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, hsla(22, 100%, 94%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 100%, hsla(240, 100%, 95%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 0%, hsla(343, 100%, 95%, 1) 0px, transparent 50%);
   background-attachment: fixed;
 }

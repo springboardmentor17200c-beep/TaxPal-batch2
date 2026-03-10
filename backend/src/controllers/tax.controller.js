@@ -9,7 +9,7 @@ exports.estimateTax = async (req, res) => {
 
         // Get user's transactions for the year
         const transactions = await Transaction.find({
-            user_id: req.user,
+            user: req.user,
             date: {
                 $gte: new Date(currentYear, 0, 1),
                 $lte: new Date(currentYear, 11, 31, 23, 59, 59)
