@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const User = require("../models/user.model");
-const Transaction = require("../models/transaction.model");
-const connectDB = require("../config/database");
+const User = require("../models/User");
+const Transaction = require("../models/Transaction");
+const connectDB = require("../config/db");
 
 const seed = async () => {
   await connectDB();
@@ -32,6 +32,15 @@ const seed = async () => {
       amount: 2000,
       date: new Date(),
     },
+  ]);
+
+  await Category.insertMany([
+    { name: "Salary", type: "income", isDefault: true },
+    { name: "Freelance", type: "income", isDefault: true },
+    { name: "Food", type: "expense", isDefault: true },
+    { name: "Rent", type: "expense", isDefault: true },
+    { name: "Utilities", type: "expense", isDefault: true },
+    { name: "Transport", type: "expense", isDefault: true },
   ]);
 
   console.log("Seed complete");
