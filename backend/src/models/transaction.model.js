@@ -15,6 +15,7 @@ const transactionSchema = new mongoose.Schema(
     category: { type: String, required: true },
     amount: { type: Number, required: true, min: 0.01 },
     date: { type: Date, required: true },
+    description: String,
     notes: String,
   },
   { timestamps: true }

@@ -1,12 +1,48 @@
 const Budget = require("../models/budget.model");
 
+const Transaction = require("../models/transaction.model");
+const Category = require("../models/category.model");
+
 // @desc    Get all budgets for a user
 // @route   GET /api/budgets
 // @access  Private
 exports.getBudgets = async (req, res, next) => {
   try {
-    const budgets = await Budget.find({ user: req.user });
-    res.status(200).json(budgets);
+    const budgets = await Budget.find({ user: req.user }).lean();
+    
+    // Add usage tracking to each budget
+    const enrichedBudgets = await Promise.all(budgets.map(async (b) => {
+      let start, end;
+      if (b.month && b.month.includes('-')) {
+          const [year, monthStr] = b.month.split('-');
+          start = new Date(year, parseInt(monthStr) - 1, 1);
+          end = new Date(year, parseInt(monthStr), 0, 23, 59, 59);
+      } else {
+          const d = new Date();
+          start = new Date(d.getFullYear(), d.getMonth(), 1);
+          end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+      }
+
+      const cat = await Category.findById(b.category);
+      let spent = 0;
+      if (cat) {
+          const transactions = await Transaction.find({
+              user: req.user,
+              category: cat.name,
+              type: 'expense',
+              date: { $gte: start, $lte: end }
+          });
+          spent = transactions.reduce((sum, t) => sum + t.amount, 0);
+      }
+      return {
+          ...b,
+          categoryName: cat ? cat.name : 'Unknown',
+          spent,
+          remaining: Math.max(0, b.limit - spent)
+      };
+    }));
+
+    res.status(200).json(enrichedBudgets);
   } catch (error) {
     next(error);
   }
@@ -17,7 +53,12 @@ exports.getBudgets = async (req, res, next) => {
 // @access  Private
 exports.setBudget = async (req, res, next) => {
   try {
-    const { category, limit } = req.body;
+    const { category, limit, month } = req.body;
+    let targetMonth = month;
+    if (!targetMonth) {
+        const d = new Date();
+        targetMonth = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    }
 
     if (!category || limit === undefined) {
       const error = new Error("Please provide category and limit");
@@ -27,7 +68,7 @@ exports.setBudget = async (req, res, next) => {
 
     // Upsert budget (update if exists, create if not)
     const budget = await Budget.findOneAndUpdate(
-      { user: req.user, category },
+      { user: req.user, category, month: targetMonth },
       { limit },
       { new: true, upsert: true, runValidators: true }
     );

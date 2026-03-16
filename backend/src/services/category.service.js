@@ -20,6 +20,34 @@ exports.createCategory = async (data, userId) => {
   });
 };
 
+exports.updateCategory = async (id, data, userId) => {
+  const category = await Category.findOne({ _id: id, user: userId });
+  if (!category) {
+    const err = new Error("Category not found");
+    err.statusCode = 404;
+    throw err;
+  }
+  if (category.isDefault) {
+    const err = new Error("Cannot edit default category");
+    err.statusCode = 403;
+    throw err;
+  }
+  
+  const oldName = category.name;
+  if (data.name) category.name = data.name;
+  if (data.type) category.type = data.type;
+  
+  await category.save();
+  
+  if (data.name && data.name !== oldName) {
+      await Transaction.updateMany(
+          { user: userId, category: oldName },
+          { $set: { category: data.name } }
+      );
+  }
+  return category;
+};
+
 exports.getCategories = async (userId) => {
   return await Category.find({
     $or: [{ isDefault: true }, { user: userId }],

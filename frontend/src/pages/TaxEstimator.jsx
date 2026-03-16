@@ -21,6 +21,17 @@ export default function TaxEstimator() {
     const [isSaving, setIsSaving] = useState(false);
     const [saveSuccess, setSaveSuccess] = useState(false);
 
+    // Manual Entry States
+    const [manualState, setManualState] = useState('');
+    const [manualStatus, setManualStatus] = useState('Single');
+    const [manualQuarter, setManualQuarter] = useState('Q1');
+    const [manualIncome, setManualIncome] = useState(0);
+    const [manualBusinessExpenses, setManualBusinessExpenses] = useState(0);
+    const [manualRetirement, setManualRetirement] = useState(0);
+    const [manualHealthIns, setManualHealthIns] = useState(0);
+    const [manualHomeOffice, setManualHomeOffice] = useState(0);
+    const [manualResult, setManualResult] = useState(null);
+
     useEffect(() => {
         fetchTaxData();
         fetchSavedEstimates();
@@ -70,6 +81,18 @@ export default function TaxEstimator() {
         } finally {
             setIsSaving(false);
         }
+    };
+
+    const handleManualCalculate = () => {
+        const totalDeductions = Number(manualBusinessExpenses) + Number(manualRetirement) + Number(manualHealthIns) + Number(manualHomeOffice);
+        const taxableIncome = Math.max(0, Number(manualIncome) - totalDeductions);
+        // Simple mock progressive tax calculation or flat tax
+        let estimatedTax = taxableIncome * 0.22; // 22% mock rate
+        setManualResult({
+            taxableIncome,
+            estimatedTax,
+            totalDeductions
+        });
     };
 
     const isCurrentQuarter = (qId) => taxData?.currentQuarter === qId;
@@ -190,6 +213,113 @@ export default function TaxEstimator() {
 
                                 </div>
                             )}
+                        </div>
+
+                        {/* Manual Tax Calculator Card */}
+                        <div className="lg:col-span-2 glass-card p-8 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-3xl mt-8 transition-all duration-300 hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)]">
+                            <div className="flex items-center justify-between mb-8">
+                                <h2 className="text-xl font-bold text-slate-800 flex items-center gap-3">
+                                    <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600">
+                                        <Calculator className="w-6 h-6" />
+                                    </div>
+                                    Manual Tax Estimator
+                                </h2>
+                            </div>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Country/Region</label>
+                                    <select value={region} onChange={e => setRegion(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                                        <option value="US">United States</option>
+                                        <option value="UK">United Kingdom</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">State/Province</label>
+                                    <input type="text" value={manualState} onChange={e => setManualState(e.target.value)} placeholder="e.g., California" className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Filing Status</label>
+                                    <select value={manualStatus} onChange={e => setManualStatus(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                                        <option value="Single">Single</option>
+                                        <option value="Married">Married Filing Jointly</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Quarter</label>
+                                    <select value={manualQuarter} onChange={e => setManualQuarter(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none">
+                                        <option value="Q1">Q1 (Jan-Mar)</option>
+                                        <option value="Q2">Q2 (Apr-Jun)</option>
+                                        <option value="Q3">Q3 (Jul-Sep)</option>
+                                        <option value="Q4">Q4 (Oct-Dec)</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div className="mb-6">
+                                <label className="block text-sm font-semibold text-slate-700 mb-2">Gross Income for Quarter</label>
+                                <div className="relative">
+                                    <span className="absolute left-3 top-2.5 text-slate-400">$</span>
+                                    <input type="number" value={manualIncome} onChange={e => setManualIncome(e.target.value)} className="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
+                                </div>
+                            </div>
+
+                            <h3 className="text-md font-bold text-slate-800 mb-4">Deductions</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Business Expenses</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
+                                        <input type="number" value={manualBusinessExpenses} onChange={e => setManualBusinessExpenses(e.target.value)} className="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Retirement Contributions</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
+                                        <input type="number" value={manualRetirement} onChange={e => setManualRetirement(e.target.value)} className="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Health Insurance Premiums</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
+                                        <input type="number" value={manualHealthIns} onChange={e => setManualHealthIns(e.target.value)} className="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
+                                    </div>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-semibold text-slate-700 mb-2">Home Office Deduction</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2.5 text-slate-400">$</span>
+                                        <input type="number" value={manualHomeOffice} onChange={e => setManualHomeOffice(e.target.value)} className="w-full pl-8 p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none" placeholder="0.00" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button onClick={handleManualCalculate} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 mb-8">
+                                Calculate Estimated Tax
+                            </button>
+
+                            {manualResult !== null && (
+                                <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200/60 shadow-inner">
+                                    <h3 className="text-lg font-bold text-slate-800 mb-4">Tax Summary</h3>
+                                    <div className="space-y-3">
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-500 font-semibold">Total Deductions</span>
+                                            <span className="text-slate-900 font-bold">${manualResult.totalDeductions.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                                        </div>
+                                        <div className="flex justify-between items-center text-sm">
+                                            <span className="text-slate-500 font-semibold">Taxable Income</span>
+                                            <span className="text-slate-900 font-bold">${manualResult.taxableIncome.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                                        </div>
+                                        <div className="pt-3 border-t border-slate-200 flex justify-between items-center">
+                                            <span className="text-slate-800 font-bold">Estimated Quarterly Tax</span>
+                                            <span className="text-2xl font-black text-indigo-700">${manualResult.estimatedTax.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
 
                         {/* Quarterly Schedule Card & History */}

@@ -197,6 +197,80 @@ export default function CalendarView() {
                             </div>
                         </div>
 
+                        {/* List View grouped by month below grid (or we can put it in its own full row) */}
+                        <div className="xl:col-span-3 glass-card p-6 border border-slate-200/60 shadow-xl bg-white/80 backdrop-blur-xl rounded-3xl mt-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="text-xl font-bold text-slate-800">Schedule View</h3>
+                                <button
+                                    onClick={async () => {
+                                        if (window.confirm('Generate quarterly tax reminders and payments for the current year?')) {
+                                            const y = new Date().getFullYear();
+                                            const defaultDeadlines = [
+                                                { title: 'Reminder: Q1 Estimated Tax Payment', dueDate: `${y}-04-01`, type: 'reminder', priority: 'medium', description: 'Reminder for upcoming q1 estimated tax payment due on April 15' },
+                                                { title: 'Q1 Estimated Tax Payment', dueDate: `${y}-04-15`, type: 'payment', priority: 'high', description: 'First quarter estimated tax payment due' },
+                                                { title: 'Reminder: Q2 Estimated Tax Payment', dueDate: `${y}-06-01`, type: 'reminder', priority: 'medium', description: 'Reminder for upcoming q2 estimated tax payment due on June 15' },
+                                                { title: 'Q2 Estimated Tax Payment', dueDate: `${y}-06-15`, type: 'payment', priority: 'high', description: 'Second quarter estimated tax payment due' },
+                                                { title: 'Reminder: Q3 Estimated Tax Payment', dueDate: `${y}-09-01`, type: 'reminder', priority: 'medium', description: 'Reminder for upcoming q3 estimated tax payment due on Sep 15' },
+                                                { title: 'Q3 Estimated Tax Payment', dueDate: `${y}-09-15`, type: 'payment', priority: 'high', description: 'Third quarter estimated tax payment due' },
+                                                { title: 'Reminder: Q4 Estimated Tax Payment', dueDate: `${y+1}-01-01`, type: 'reminder', priority: 'medium', description: 'Reminder for upcoming q4 estimated tax payment due on Jan 15' },
+                                                { title: 'Q4 Estimated Tax Payment', dueDate: `${y+1}-01-15`, type: 'payment', priority: 'high', description: 'Fourth quarter estimated tax payment due' }
+                                            ];
+                                            for (let d of defaultDeadlines) {
+                                                await createDeadline(d);
+                                            }
+                                            fetchDeadlines();
+                                        }
+                                    }}
+                                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-lg transition-colors"
+                                >
+                                    Auto-Generate Quarterly Deadlines
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-8">
+                                {Object.entries(
+                                    [...deadlines].sort((a,b) => new Date(a.dueDate) - new Date(b.dueDate))
+                                    .reduce((acc, current) => {
+                                        const date = new Date(current.dueDate);
+                                        const key = `${date.toLocaleString('default', { month: 'long' })} ${date.getFullYear()}`;
+                                        if (!acc[key]) acc[key] = [];
+                                        acc[key].push(current);
+                                        return acc;
+                                    }, {})
+                                ).map(([monthLabel, events]) => (
+                                    <div key={monthLabel} className="space-y-4">
+                                        <h4 className="text-lg font-bold text-slate-700 border-b border-slate-100 pb-2">{monthLabel}</h4>
+                                        <div className="space-y-3">
+                                            {events.map((event) => (
+                                                <div key={event._id} className="p-4 rounded-xl border border-slate-100 bg-white shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4 group">
+                                                    <div>
+                                                        <h5 className="font-bold text-slate-800">{event.title}</h5>
+                                                        <p className="text-xs font-semibold text-slate-500 mt-1">{new Date(event.dueDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                                                        {event.description && <p className="text-sm text-slate-600 mt-2">{event.description}</p>}
+                                                    </div>
+                                                    <div className="flex items-center gap-4">
+                                                        <span className={`px-3 py-1 text-xs font-bold rounded-full lowercase tracking-wide 
+                                                            ${event.type === 'reminder' ? 'bg-blue-100 text-blue-700' : 
+                                                              event.type === 'payment' ? 'bg-amber-100 text-amber-700' : 
+                                                              'bg-slate-100 text-slate-700'}`}>
+                                                            {event.type}
+                                                        </span>
+                                                        <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                            <button onClick={() => handleEdit(event)} className="p-1.5 hover:bg-slate-100 rounded-md text-slate-400 hover:text-indigo-600"><Edit2 className="w-4 h-4" /></button>
+                                                            <button onClick={() => handleDelete(event._id)} className="p-1.5 hover:bg-slate-100 rounded-md text-slate-400 hover:text-rose-600"><Trash2 className="w-4 h-4" /></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                ))}
+                                {deadlines.length === 0 && (
+                                    <p className="text-slate-500 text-center py-4">No schedule available.</p>
+                                )}
+                            </div>
+                        </div>
+
                         {/* Sidebar: Upcoming & Actions */}
                         <div className="space-y-8">
                             <div className="glass-card p-6 border border-slate-200/60 bg-white/80 backdrop-blur-xl rounded-3xl">
@@ -276,6 +350,7 @@ export default function CalendarView() {
                                         <option value="deadline">Deadline</option>
                                         <option value="reminder">Reminder</option>
                                         <option value="alert">Alert</option>
+                                        <option value="payment">Payment</option>
                                     </select>
                                 </div>
                                 <div>

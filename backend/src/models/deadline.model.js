@@ -21,7 +21,7 @@ const deadlineSchema = new mongoose.Schema({
     },
     type: {
         type: String,
-        enum: ['deadline', 'reminder', 'alert', 'other'],
+        enum: ['deadline', 'reminder', 'alert', 'other', 'payment'],
         default: 'deadline'
     },
     status: {

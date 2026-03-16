@@ -14,6 +14,15 @@ exports.create = async (req, res, next) => {
   }
 };
 
+exports.update = async (req, res, next) => {
+  try {
+    const category = await service.updateCategory(req.params.id, req.body, req.user);
+    res.json(category);
+  } catch (err) {
+    next(err);
+  }
+};
+
 exports.getAll = async (req, res, next) => {
   try {
     const categories = await service.getCategories(req.user);
