@@ -31,3 +31,27 @@ exports.categoryBreakdown = async (userId, month) => {
       totalExpenses === 0 ? 0 : (item.totalSpent / totalExpenses) * 100,
   }));
 };
+
+exports.yearlyOverview = async (user, year) => {
+  const result = [];
+  const startOfYear = new Date(year, 0, 1);
+  const endOfYear = new Date(year, 11, 31, 23, 59, 59);
+
+  const transactions = await Transaction.find({
+    user: user._id,
+    date: { $gte: startOfYear, $lte: endOfYear }
+  });
+
+  for (let m = 0; m < 12; m++) {
+    const monthTransactions = transactions.filter(t => t.date.getMonth() === m);
+    const income = monthTransactions.filter(t => t.type === 'income').reduce((s, t) => s + t.amount, 0);
+    const expenses = monthTransactions.filter(t => t.type === 'expense').reduce((s, t) => s + t.amount, 0);
+    
+    result.push({
+      month: m + 1,
+      income,
+      expenses
+    });
+  }
+  return result;
+};

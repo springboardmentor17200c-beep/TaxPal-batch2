@@ -5,6 +5,7 @@ import TransactionList from '../components/TransactionList';
 import TransactionModal from '../components/TransactionModal';
 import { useTransactions } from '../hooks/useTransactions';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { Helmet } from 'react-helmet';
 
 export default function Transactions() {
     const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
@@ -20,7 +21,11 @@ export default function Transactions() {
     } = useTransactions();
 
     return (
-        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300" id="transactions-page">
+            <Helmet>
+                <title>Transactions | TaxPal Financial Ledger</title>
+                <meta name="description" content="View, record, and manage all your income and expenses. Filter transactions to track your spending habits." />
+            </Helmet>
             {/* Animated Background Blobs */}
             <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-indigo-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob pointer-events-none z-0"></div>
             <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-rose-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob animation-delay-2000 pointer-events-none z-0"></div>

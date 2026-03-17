@@ -20,3 +20,19 @@ exports.categoryBreakdown = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.yearlyOverview = async (req, res, next) => {
+  try {
+    const { year } = req.query;
+    const selectedYear = year || new Date().getFullYear();
+    
+    const result = await analyticsService.yearlyOverview(
+      req.user,
+      parseInt(selectedYear)
+    );
+
+    res.json(result);
+  } catch (err) {
+    next(err);
+  }
+};

@@ -12,22 +12,15 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import Success from '../components/Success';
 import Alert from '../components/Alert';
 import { useDeadlines } from '../hooks/useDeadlines';
+import QuarterlyTaxAlert from '../components/QuarterlyTaxAlert';
+import UserDeadlineAlert from '../components/UserDeadlineAlert';
+import { Helmet } from 'react-helmet';
 
 export default function Dashboard() {
   const [isIncomeModalOpen, setIsIncomeModalOpen] = useState(false);
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const { user } = useAuth();
-  const { upcomingAlert } = useDeadlines();
   const [activeAlert, setActiveAlert] = useState(null);
-
-  useEffect(() => {
-    if (upcomingAlert) {
-      setActiveAlert({
-        message: `Upcoming Deadline: ${upcomingAlert.title} is due on ${new Date(upcomingAlert.dueDate).toLocaleDateString()}!`,
-        type: 'warning'
-      });
-    }
-  }, [upcomingAlert]);
 
   const {
     transactions,
@@ -51,7 +44,10 @@ export default function Dashboard() {
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + t.amount, 0);
 
-    const estimatedTax = totalIncome * 0.25;
+    // Use a default rate of 20% or similar, but ideally this should come from a service
+    // For now, let's keep it as an estimate but label it clearly in the UI if needed
+    const estimatedTax = totalIncome * 0.20; 
+
     const savingsRate = totalIncome > 0
       ? ((totalIncome - totalExpenses) / totalIncome) * 100
       : 0;
@@ -77,7 +73,11 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+    <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300" id="dashboard-page">
+      <Helmet>
+        <title>Dashboard | TaxPal Personal Finance</title>
+        <meta name="description" content="View your financial overview, track income and expenses, and monitor your tax readiness in real-time." />
+      </Helmet>
       {/* Animated Background Blobs */}
       <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-indigo-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob pointer-events-none z-0"></div>
       <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-rose-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-30 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -101,7 +101,9 @@ export default function Dashboard() {
           />
         )}
 
-        <main className="ml-72 p-8 relative z-10">
+        <main className="ml-72 p-8 pt-2 relative z-10">
+          <QuarterlyTaxAlert />
+          <UserDeadlineAlert />
           <div className="flex justify-between items-center mb-8 animate-fade-in-up">
             <div>
               <div className="flex items-center gap-3 mb-1">

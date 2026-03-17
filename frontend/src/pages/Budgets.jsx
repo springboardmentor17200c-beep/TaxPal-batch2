@@ -4,6 +4,7 @@ import { useTransactions } from '../hooks/useTransactions';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Success from '../components/Success';
+import { Helmet } from 'react-helmet';
 import axios from 'axios';
 
 // The auth token needs to be sent with these requests
@@ -96,7 +97,11 @@ export default function Budgets() {
     const isLoading = isLoadingBudgets || isTxLoading;
 
     return (
-        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300" id="budgets-page">
+            <Helmet>
+                <title>Budget Planning | TaxPal Finance Control</title>
+                <meta name="description" content="Set spending limits for categories and monitor your monthly financial goals with precision trackers." />
+            </Helmet>
             {/* Animated Background Blobs */}
             <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-emerald-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
             <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-violet-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -111,7 +116,7 @@ export default function Budgets() {
                     )}
 
                     <div className="mb-8 animate-fade-in-up">
-                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm">Budgets</h1>
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm" id="budgets-heading">Budgets</h1>
                         <p className="text-slate-600 mt-2 text-sm font-semibold">
                             Set monthly limits and track your category spending.
                         </p>

@@ -37,3 +37,6 @@ export const getTaxEstimates = async () => {
     const response = await axios.get(API_URL, config);
     return response.data;
 };
+
+// Alias for manual saves from TaxEstimator page
+export const saveTaxEstimateGeneral = saveTaxEstimate;

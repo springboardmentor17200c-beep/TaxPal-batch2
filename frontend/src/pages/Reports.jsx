@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FileText, Download, Printer, Settings2, FileBarChart, Loader2, ArrowDownToLine } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { generateReport, getReports } from '../services/report.service';
+import { Helmet } from 'react-helmet';
 
 export default function Reports() {
     const [reportType, setReportType] = useState('Income Statement');
@@ -53,7 +54,11 @@ export default function Reports() {
     };
 
     return (
-        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300" id="reports-page">
+            <Helmet>
+                <title>Financial Reports | TaxPal Statements</title>
+                <meta name="description" content="Generate and download professional financial statements, income reports, and tax readiness documents." />
+            </Helmet>
             {/* Animated Background Blobs */}
             <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-rose-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
             <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-amber-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -63,7 +68,7 @@ export default function Reports() {
                 <Sidebar />
                 <main className="ml-72 p-8 mb-12 relative z-10">
                     <div className="mb-8 animate-fade-in-up">
-                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm">Financial Reports</h1>
+                        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm" id="reports-heading">Financial Reports</h1>
                         <p className="text-slate-600 mt-2 text-sm font-semibold">
                             Generate and download your financial reports for tax filing or personal review.
                         </p>

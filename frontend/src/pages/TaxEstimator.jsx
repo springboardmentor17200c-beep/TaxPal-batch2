@@ -1,16 +1,15 @@
 import { useState, useMemo, useEffect } from 'react';
-import { Calculator, Calendar, Globe, AlertCircle, Save, CheckCircle2, FileText, History } from 'lucide-react';
+import { Calculator, Calendar as CalendarIcon, Globe, AlertCircle, Save, CheckCircle2, FileText, History, ChevronRight } from 'lucide-react';
 import { useTransactions } from '../hooks/useTransactions';
-import { estimateTax, saveTaxEstimate, getTaxEstimates } from '../services/tax.service';
+import { estimateTax, getTaxEstimates, saveTaxEstimateGeneral } from '../services/tax.service';
+import { Link } from 'react-router-dom';
 import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
+import QuarterlyTaxAlert from '../components/QuarterlyTaxAlert';
+import UserDeadlineAlert from '../components/UserDeadlineAlert';
+import { Helmet } from 'react-helmet';
 
-const quarterlyDates = [
-    { id: 'Q1', quarter: 'Q1 (Jan - Mar)', due: 'April 15' },
-    { id: 'Q2', quarter: 'Q2 (Apr - Jun)', due: 'June 15' },
-    { id: 'Q3', quarter: 'Q3 (Jul - Sep)', due: 'September 15' },
-    { id: 'Q4', quarter: 'Q4 (Oct - Dec)', due: 'January 15' }
-];
+
 
 export default function TaxEstimator() {
     const { transactions, isLoading: isTxLoading } = useTransactions();
@@ -62,40 +61,42 @@ export default function TaxEstimator() {
         }
     };
 
-    const handleSaveEstimate = async () => {
-        if (!taxData) return;
+
+
+    const handleManualCalculate = async () => {
+        const totalDeductions = Number(manualBusinessExpenses) + Number(manualRetirement) + Number(manualHealthIns) + Number(manualHomeOffice);
+        const taxableIncome = Math.max(0, Number(manualIncome) - totalDeductions);
+        // Simple mock progressive tax calculation or flat tax
+        let estimatedTaxValue = taxableIncome * 0.22; // 22% mock rate
+        
+        setManualResult({
+            taxableIncome,
+            estimatedTax: estimatedTaxValue,
+            totalDeductions
+        });
+
+        // 🚀 Save to Database as per requirement
         setIsSaving(true);
         try {
-            const result = await saveTaxEstimate({
-                quarter: taxData.currentQuarter,
-                estimated_tax: taxData.quarterlyTax,
-                year: taxData.year
+            const result = await saveTaxEstimateGeneral({
+                quarter: manualQuarter,
+                estimated_tax: estimatedTaxValue,
+                year: new Date().getFullYear(),
+                source: 'manual'
             });
             if (result.success) {
                 setSaveSuccess(true);
-                fetchSavedEstimates(); // refresh
+                fetchSavedEstimates(); // refresh history
                 setTimeout(() => setSaveSuccess(false), 3000);
             }
         } catch (error) {
-            console.error("Failed to save estimate", error);
+            console.error("Failed to save manual estimate", error);
         } finally {
             setIsSaving(false);
         }
     };
 
-    const handleManualCalculate = () => {
-        const totalDeductions = Number(manualBusinessExpenses) + Number(manualRetirement) + Number(manualHealthIns) + Number(manualHomeOffice);
-        const taxableIncome = Math.max(0, Number(manualIncome) - totalDeductions);
-        // Simple mock progressive tax calculation or flat tax
-        let estimatedTax = taxableIncome * 0.22; // 22% mock rate
-        setManualResult({
-            taxableIncome,
-            estimatedTax,
-            totalDeductions
-        });
-    };
 
-    const isCurrentQuarter = (qId) => taxData?.currentQuarter === qId;
 
     if (isTxLoading) {
         return (
@@ -106,7 +107,11 @@ export default function TaxEstimator() {
     }
 
     return (
-        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300">
+        <div className="min-h-screen ultra-bg font-sans text-slate-900 selection:bg-indigo-300" id="tax-estimator-page">
+            <Helmet>
+                <title>Tax Estimator | Smart Regional Tax Projections</title>
+                <meta name="description" content="Calculate your regional tax burden automatically from transactions or manually with our advanced deduction tracker." />
+            </Helmet>
             {/* Animated Background Blobs */}
             <div className="fixed top-[-10%] left-[-10%] w-[40vw] h-[40vw] bg-emerald-400 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob pointer-events-none z-0"></div>
             <div className="fixed top-[20%] right-[-10%] w-[40vw] h-[40vw] bg-indigo-300 rounded-full mix-blend-multiply filter blur-[120px] opacity-20 animate-blob animation-delay-2000 pointer-events-none z-0"></div>
@@ -114,8 +119,9 @@ export default function TaxEstimator() {
 
             <div className="relative z-10">
                 <Sidebar />
-                <main className="ml-72 p-8 relative z-10">
-
+                <main className="ml-72 p-8 pt-2 relative z-10">
+                    <QuarterlyTaxAlert />
+                    <UserDeadlineAlert />
                     <div className="mb-8 flex items-center justify-between animate-fade-in-up">
                         <div>
                             <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-800 to-purple-600 tracking-tight drop-shadow-sm">Tax Estimator</h1>
@@ -188,26 +194,11 @@ export default function TaxEstimator() {
                                         </div>
 
                                         <div className="bg-indigo-50/50 p-6 rounded-2xl border border-indigo-100/50 flex flex-col items-center flex-shrink-0 min-w-[240px]">
-                                            <span className="text-indigo-600/80 font-semibold text-sm mb-2">{taxData.currentQuarter} Estimated Payment</span>
-                                            <span className="text-3xl font-bold text-indigo-700 mb-4">
+                                            <span className="text-indigo-600/80 font-semibold text-sm mb-2">{taxData.currentQuarter} Predicted Installment</span>
+                                            <span className="text-3xl font-bold text-indigo-700">
                                                 ${taxData.quarterlyTax.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                                             </span>
-                                            <button
-                                                onClick={handleSaveEstimate}
-                                                disabled={isSaving || saveSuccess}
-                                                className={`w-full py-2.5 px-4 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all ${saveSuccess
-                                                    ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                                                    : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-600/20 hover:shadow-indigo-600/40 hover:-translate-y-0.5'
-                                                    }`}
-                                            >
-                                                {saveSuccess ? (
-                                                    <><CheckCircle2 className="w-5 h-5" /> Saved!</>
-                                                ) : isSaving ? (
-                                                    <LoadingSpinner className="w-5 h-5" />
-                                                ) : (
-                                                    <><Save className="w-5 h-5" /> Save Estimate</>
-                                                )}
-                                            </button>
+                                            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-4">Transaction Based Result</p>
                                         </div>
                                     </div>
 
@@ -296,8 +287,20 @@ export default function TaxEstimator() {
                                 </div>
                             </div>
 
-                            <button onClick={handleManualCalculate} className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg transition-all active:scale-95 mb-8">
-                                Calculate Estimated Tax
+                            <button 
+                                onClick={handleManualCalculate} 
+                                disabled={isSaving || saveSuccess}
+                                className={`w-full py-3 font-bold rounded-xl shadow-lg transition-all active:scale-95 mb-8 flex items-center justify-center gap-2 ${
+                                    saveSuccess ? 'bg-emerald-500 text-white' : 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                                }`}
+                            >
+                                {saveSuccess ? (
+                                    <><CheckCircle2 className="w-5 h-5" /> Saved to History!</>
+                                ) : isSaving ? (
+                                    <LoadingSpinner className="w-5 h-5" />
+                                ) : (
+                                    'Calculate & Save Estimated Tax'
+                                )}
                             </button>
 
                             {manualResult !== null && (
@@ -322,78 +325,79 @@ export default function TaxEstimator() {
 
                         </div>
 
-                        {/* Quarterly Schedule Card & History */}
-                        <div className="lg:col-span-1 space-y-8">
-                            {/* Reminders */}
-                            <div className="glass-card p-6 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-3xl h-fit">
-                                <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
-                                    <div className="p-2 bg-rose-50 rounded-xl text-rose-500">
-                                        <Calendar className="w-5 h-5" />
+                        <div className="lg:col-span-3 mt-12 mb-12">
+                            <div className="glass-card p-10 border border-indigo-100 shadow-2xl shadow-indigo-500/10 bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-[3rem] text-white flex flex-col md:flex-row items-center justify-between gap-8 relative overflow-hidden group">
+                                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-32 -mt-32 blur-3xl animate-pulse"></div>
+                                <div className="relative z-10 max-w-xl text-center md:text-left">
+                                    <div className="flex items-center gap-3 mb-4 justify-center md:justify-start">
+                                        <div className="p-2 bg-white/20 backdrop-blur-md rounded-xl">
+                                            <CalendarIcon className="w-6 h-6 text-white" />
+                                        </div>
+                                        <span className="text-xs font-black uppercase tracking-[0.3em] text-indigo-100">Strategic Awareness</span>
                                     </div>
-                                    Quarterly Deadlines
-                                </h2>
-
-                                <div className="space-y-4 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px before:h-full before:w-0.5 before:bg-gradient-to-b before:from-indigo-100 before:via-slate-200 before:to-transparent">
-                                    {quarterlyDates.map((q, i) => {
-                                        const isActive = isCurrentQuarter(q.id);
-                                        return (
-                                            <div key={i} className={`relative flex items-center justify-between group ${isActive ? 'is-active' : ''}`}>
-
-                                                <div className={`flex items-center justify-center w-10 h-10 rounded-full border-2 bg-white text-slate-400 border-slate-100 shadow-sm shrink-0 z-10 transition-colors ${isActive ? '!bg-indigo-50 !text-indigo-600 !border-indigo-200 ring-4 ring-indigo-50' : ''}`}>
-                                                    <span className="text-xs font-bold">{i + 1}</span>
-                                                </div>
-
-                                                <div className={`w-[calc(100%-3.5rem)] p-4 rounded-2xl border transition-all ${isActive ? 'bg-indigo-50/30 border-indigo-200 shadow-sm shadow-indigo-100/50' : 'bg-white border-slate-100 shadow-sm hover:border-slate-300'}`}>
-                                                    <div className="flex items-center justify-between mb-1.5">
-                                                        <div className={`font-bold text-sm ${isActive ? 'text-indigo-900' : 'text-slate-800'}`}>{q.quarter}</div>
-                                                        {isActive && <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 text-[10px] font-bold uppercase tracking-wider">Current</span>}
-                                                    </div>
-                                                    <div className="text-slate-500 text-xs font-semibold">Due: <span className={isActive ? "text-rose-600 font-bold" : "text-slate-600"}>{q.due}</span></div>
-                                                </div>
-                                            </div>
-                                        )
-                                    })}
+                                    <h2 className="text-4xl font-black mb-4 leading-tight">Your Unified Tax Calendar is Active</h2>
+                                    <p className="text-indigo-100/80 font-medium text-lg leading-relaxed">
+                                        We've integrated all quarterly deadlines and reminders into one central headquarters. Monitor your fiscal trajectory with precision.
+                                    </p>
+                                </div>
+                                <div className="relative z-10 flex-shrink-0">
+                                    <Link 
+                                        to="/calendar" 
+                                        className="inline-flex items-center gap-3 bg-white text-indigo-700 px-8 py-4 rounded-2xl font-black shadow-xl hover:shadow-2xl hover:scale-105 transition-all active:scale-95 group/btn"
+                                    >
+                                        Launch Unified Calendar
+                                        <div className="p-2 bg-indigo-50 rounded-lg group-hover/btn:translate-x-1 transition-transform">
+                                            <ChevronRight className="w-5 h-5" />
+                                        </div>
+                                    </Link>
                                 </div>
                             </div>
+                        </div>
 
-                            {/* Saved History */}
-                            <div className="glass-card p-6 border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.04)] bg-white/80 backdrop-blur-xl rounded-3xl h-fit">
-                                <h2 className="text-lg font-bold text-slate-800 mb-6 flex items-center gap-3">
-                                    <div className="p-2 bg-amber-50 rounded-xl text-amber-500">
-                                        <History className="w-5 h-5" />
+                        {/* Recent History in a wide card */}
+                        <div className="lg:col-span-3">
+                            <div className="glass-card p-8 border border-slate-200/60 shadow-xl bg-white/80 backdrop-blur-xl rounded-[2.5rem]">
+                                <div className="flex items-center gap-4 mb-8">
+                                    <div className="p-3 bg-amber-50 rounded-2xl text-amber-500 border border-amber-100/50">
+                                        <History className="w-6 h-6" />
                                     </div>
-                                    Saved Estimates
-                                </h2>
+                                    <div>
+                                        <h2 className="text-xl font-bold text-slate-800">Saved Estimates History</h2>
+                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">Audit Ledger</p>
+                                    </div>
+                                </div>
+
                                 {savedEstimates.length > 0 ? (
-                                    <div className="space-y-3">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                                         {savedEstimates.map(est => (
-                                            <div key={est._id} className="flex items-center justify-between p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 group hover:bg-slate-50 transition-colors">
-                                                <div className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-full bg-indigo-100/50 flex items-center justify-center text-indigo-600 font-bold text-xs">
+                                            <div key={est._id} className="p-5 rounded-3xl border border-slate-100 bg-slate-50/50 group hover:bg-white hover:shadow-xl hover:shadow-indigo-500/5 transition-all duration-300">
+                                                <div className="flex justify-between items-start mb-4">
+                                                    <div className="w-10 h-10 rounded-2xl bg-indigo-100/50 flex items-center justify-center text-indigo-600 font-black text-sm">
                                                         {est.quarter}
                                                     </div>
-                                                    <div>
-                                                        <p className="text-sm font-semibold text-slate-800">{est.year} Estimate</p>
-                                                        <p className="text-[10px] font-medium text-slate-400">{new Date(est.createdAt).toLocaleDateString()}</p>
-                                                    </div>
+                                                    <span className="text-[10px] font-black text-slate-300 uppercase">{est.year}</span>
                                                 </div>
-                                                <div className="text-right">
-                                                    <p className="text-sm font-bold text-slate-900">${est.estimated_tax.toLocaleString()}</p>
-                                                </div>
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1 italic">Estimated Tax</p>
+                                                <p className="text-2xl font-black text-slate-900 mb-2">${est.estimated_tax.toLocaleString()}</p>
+                                                <p className="text-[10px] font-bold text-slate-400 border-t border-slate-100 pt-3 mt-2">
+                                                    Recorded: {new Date(est.createdAt).toLocaleDateString()}
+                                                </p>
                                             </div>
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="text-center py-8 text-slate-400 flex flex-col items-center">
-                                        <FileText className="w-8 h-8 mb-3 opacity-20" />
-                                        <p className="text-sm font-medium">No saved estimates yet.</p>
+                                    <div className="text-center py-12 text-slate-400 flex flex-col items-center">
+                                        <div className="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+                                            <FileText className="w-8 h-8 opacity-20" />
+                                        </div>
+                                        <p className="text-sm font-bold text-slate-500">No archival estimates discovered yet.</p>
+                                        <p className="text-xs text-slate-400 mt-1">Start by calculating your first estimation above.</p>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                     </div>
-
                 </main>
             </div>
         </div>

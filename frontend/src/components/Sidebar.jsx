@@ -7,6 +7,7 @@ import {
   Calculator,
   FileText,
   Calendar as CalendarIcon,
+  TrendingUp,
   User,
   LogOut
 } from 'lucide-react';
@@ -17,6 +18,7 @@ const navigation = [
   { name: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
   { name: 'Transactions', to: '/transactions', icon: Wallet },
   { name: 'Budgets', to: '/budgets', icon: PieChart },
+  { name: 'Analytics', to: '/analytics', icon: TrendingUp },
   { name: 'Tax Estimator', to: '/tax', icon: Calculator },
   { name: 'Reports', to: '/reports', icon: FileText },
   { name: 'Calendar', to: '/calendar', icon: CalendarIcon },
