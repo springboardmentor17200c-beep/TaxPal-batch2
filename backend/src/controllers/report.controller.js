@@ -49,13 +49,24 @@ exports.generateReport = async (req, res) => {
         const fileUrl = `/reports/${fileName}`;
 
         if (format === 'CSV') {
-            const fields = ['date', 'type', 'category', 'amount'];
+            const fields = [
+                { label: 'Transaction Date', value: 'date' },
+                { label: 'Record Type', value: 'type' },
+                { label: 'Category', value: 'category' },
+                { label: 'Amount ($)', value: 'amount' },
+                { label: 'Description', value: 'description' },
+                { label: 'Notes', value: 'notes' },
+                { label: 'Recorded At', value: 'createdAt' }
+            ];
             const json2csvParser = new Parser({ fields });
             const csv = json2csvParser.parse(transactions.map(t => ({
-                date: new Date(t.date).toLocaleDateString(),
-                type: t.type,
+                date: new Date(t.date).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }),
+                type: t.type.toUpperCase(),
                 category: t.category,
-                amount: t.amount
+                amount: t.type === 'expense' ? `-${t.amount.toFixed(2)}` : `${t.amount.toFixed(2)}`,
+                description: t.description || 'N/A',
+                notes: t.notes || 'N/A',
+                createdAt: new Date(t.createdAt).toLocaleString('en-US')
             })));
             fs.writeFileSync(filePath, csv);
 

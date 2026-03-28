@@ -55,6 +55,19 @@ exports.estimateTax = async (req, res) => {
                 { upTo: 1200000, rate: 0.15 },
                 { upTo: 1500000, rate: 0.20 },
                 { upTo: Infinity, rate: 0.30 },
+            ],
+            Canada: [
+                { upTo: 53359, rate: 0.15 },
+                { upTo: 106717, rate: 0.205 },
+                { upTo: 165430, rate: 0.26 },
+                { upTo: 235675, rate: 0.29 },
+                { upTo: Infinity, rate: 0.33 },
+            ],
+            Germany: [
+                { upTo: 10908, rate: 0.0 },
+                { upTo: 62809, rate: 0.14 },
+                { upTo: 277825, rate: 0.42 },
+                { upTo: Infinity, rate: 0.45 },
             ]
         };
 

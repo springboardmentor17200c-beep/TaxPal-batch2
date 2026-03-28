@@ -92,7 +92,7 @@ export default function TransactionList({
                 <tbody className="divide-y divide-slate-100 bg-white/50">
                   {paginatedTransactions.map((transaction) => (
                     <tr
-                      key={transaction.id}
+                      key={transaction._id}
                       className="hover:bg-slate-50 hover:shadow-sm transition-all duration-200 group relative z-0 hover:z-10"
                     >
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-900 font-medium">
@@ -110,7 +110,7 @@ export default function TransactionList({
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
                         <button
-                          onClick={() => handleDeleteClick(transaction.id)}
+                          onClick={() => handleDeleteClick(transaction._id)}
                           className="p-2 text-slate-400 hover:text-white hover:bg-rose-500 opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-xl shadow-sm border border-slate-200 hover:border-rose-500 hover:shadow-rose-500/20 hover:-translate-y-0.5"
                           title="Delete transaction"
                         >

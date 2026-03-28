@@ -23,7 +23,7 @@ exports.getBudgets = async (req, res, next) => {
           end = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
       }
 
-      const cat = await Category.findById(b.category);
+      const cat = await Category.findOne({ name: { $regex: new RegExp(`^${b.category}$`, 'i') }, user: req.user });
       let spent = 0;
       if (cat) {
           const transactions = await Transaction.find({
@@ -33,10 +33,19 @@ exports.getBudgets = async (req, res, next) => {
               date: { $gte: start, $lte: end }
           });
           spent = transactions.reduce((sum, t) => sum + t.amount, 0);
+      } else {
+          // Fallback if category not strictly found in Category collection but we still want to match
+          const transactions = await Transaction.find({
+              user: req.user,
+              category: { $regex: new RegExp(`^${b.category}$`, 'i') },
+              type: 'expense',
+              date: { $gte: start, $lte: end }
+          });
+          spent = transactions.reduce((sum, t) => sum + t.amount, 0);
       }
       return {
           ...b,
-          categoryName: cat ? cat.name : 'Unknown',
+          categoryName: cat ? cat.name : b.category,
           spent,
           remaining: Math.max(0, b.limit - spent)
       };

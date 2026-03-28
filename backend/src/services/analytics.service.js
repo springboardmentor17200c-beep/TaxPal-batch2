@@ -38,7 +38,7 @@ exports.yearlyOverview = async (user, year) => {
   const endOfYear = new Date(year, 11, 31, 23, 59, 59);
 
   const transactions = await Transaction.find({
-    user: user._id,
+    user: user,
     date: { $gte: startOfYear, $lte: endOfYear }
   });
 
