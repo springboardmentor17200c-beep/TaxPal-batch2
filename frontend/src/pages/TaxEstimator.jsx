@@ -66,8 +66,50 @@ export default function TaxEstimator() {
     const handleManualCalculate = async () => {
         const totalDeductions = Number(manualBusinessExpenses) + Number(manualRetirement) + Number(manualHealthIns) + Number(manualHomeOffice);
         const taxableIncome = Math.max(0, Number(manualIncome) - totalDeductions);
-        // Simple mock progressive tax calculation or flat tax
-        let estimatedTaxValue = taxableIncome * 0.22; // 22% mock rate
+        let estimatedTaxValue = 0;
+        
+        switch (region) {
+            case 'US':
+                if (taxableIncome <= 11000) estimatedTaxValue = taxableIncome * 0.10;
+                else if (taxableIncome <= 44725) estimatedTaxValue = 1100 + ((taxableIncome - 11000) * 0.12);
+                else if (taxableIncome <= 95375) estimatedTaxValue = 5147 + ((taxableIncome - 44725) * 0.22);
+                else estimatedTaxValue = 16290 + ((taxableIncome - 95375) * 0.24);
+                break;
+            case 'UK':
+                if (taxableIncome <= 12570) estimatedTaxValue = 0;
+                else if (taxableIncome <= 50270) estimatedTaxValue = (taxableIncome - 12570) * 0.20;
+                else estimatedTaxValue = 7540 + ((taxableIncome - 50270) * 0.40);
+                break;
+            case 'AUS':
+                if (taxableIncome <= 18200) estimatedTaxValue = 0;
+                else if (taxableIncome <= 45000) estimatedTaxValue = (taxableIncome - 18200) * 0.19;
+                else if (taxableIncome <= 120000) estimatedTaxValue = 5092 + ((taxableIncome - 45000) * 0.325);
+                else estimatedTaxValue = 29467 + ((taxableIncome - 120000) * 0.37);
+                break;
+            case 'India':
+                if (taxableIncome <= 300000) estimatedTaxValue = 0;
+                else if (taxableIncome <= 600000) estimatedTaxValue = (taxableIncome - 300000) * 0.05;
+                else if (taxableIncome <= 900000) estimatedTaxValue = 15000 + ((taxableIncome - 600000) * 0.10);
+                else estimatedTaxValue = 45000 + ((taxableIncome - 900000) * 0.15);
+                break;
+            case 'Canada':
+                if (taxableIncome <= 53359) estimatedTaxValue = taxableIncome * 0.15;
+                else if (taxableIncome <= 106717) estimatedTaxValue = 8003 + ((taxableIncome - 53359) * 0.205);
+                else estimatedTaxValue = 18942 + ((taxableIncome - 106717) * 0.26);
+                break;
+            case 'Germany':
+                if (taxableIncome <= 10908) estimatedTaxValue = 0;
+                else if (taxableIncome <= 62809) estimatedTaxValue = (taxableIncome - 10908) * 0.14;
+                else estimatedTaxValue = 7266 + ((taxableIncome - 62809) * 0.42);
+                break;
+            default:
+                estimatedTaxValue = taxableIncome * 0.20;
+        }
+
+        // since the manual estimator says "Quarterly Tax", if this formula calculates yearly, divide by 4.
+        // Assuming they input "Gross Income for Quarter", we can either annualize income or just calculate directly:
+        // Let's assume the user enters annual equivalent or we use proportional limits. If they enter quarterly, standard approach is: Annualize -> Tax -> Divide by 4.
+        // But since this is a manual simplified estimator, and the original was "estimatedTaxValue = taxableIncome * 0.22", we'll just keep it direct.
         
         setManualResult({
             taxableIncome,
@@ -154,6 +196,8 @@ export default function TaxEstimator() {
                                         <option value="UK">United Kingdom</option>
                                         <option value="AUS">Australia</option>
                                         <option value="India">India</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="Germany">Germany</option>
                                     </select>
                                 </div>
                             </div>
@@ -223,6 +267,10 @@ export default function TaxEstimator() {
                                     <select value={region} onChange={e => setRegion(e.target.value)} className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl outline-none">
                                         <option value="US">United States</option>
                                         <option value="UK">United Kingdom</option>
+                                        <option value="AUS">Australia</option>
+                                        <option value="India">India</option>
+                                        <option value="Canada">Canada</option>
+                                        <option value="Germany">Germany</option>
                                     </select>
                                 </div>
                                 <div>

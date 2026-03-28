@@ -69,7 +69,7 @@ exports.deleteCategory = async (id, userId) => {
     throw err;
   }
 
-  const linked = await Transaction.findOne({ category: id });
+  const linked = await Transaction.findOne({ category: category.name });
   if (linked) {
     const err = new Error("Category linked to transactions");
     err.statusCode = 400;

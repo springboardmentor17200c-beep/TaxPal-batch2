@@ -33,7 +33,8 @@ exports.getAll = async (req, res, next) => {
 
 exports.summary = async (req, res, next) => {
   try {
-    const match = { user: require("mongoose").Types.ObjectId(req.user) };
+    const mongoose = require("mongoose");
+    const match = { user: new mongoose.Types.ObjectId(req.user) };
 
     const summary = await Transaction.aggregate([
       { $match: match },
