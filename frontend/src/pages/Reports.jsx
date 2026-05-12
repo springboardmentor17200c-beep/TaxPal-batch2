@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { FileText, Download, Printer, Settings2, FileBarChart, Loader2, ArrowDownToLine } from 'lucide-react';
 import Sidebar from '../components/Sidebar';
 import { generateReport, getReports } from '../services/report.service';
+import { BASE_URL } from '../services/api';
 import { Helmet } from 'react-helmet';
 
 export default function Reports() {
@@ -38,7 +39,7 @@ export default function Reports() {
             if (res.success) {
                 fetchReports(); // Refresh history
                 // Auto trigger download for the generated report
-                window.open(`http://localhost:5000${res.data.file_path}`, '_blank');
+                window.open(`${BASE_URL}${res.data.file_path}`, '_blank');
             }
         } catch (error) {
             console.error('Failed to generate report', error);
@@ -206,7 +207,7 @@ export default function Reports() {
                                                             </td>
                                                             <td className="px-6 py-4 text-right">
                                                                 <a
-                                                                    href={`http://localhost:5000${report.file_path}`}
+                                                                    href={`${BASE_URL}${report.file_path}`}
                                                                     target="_blank"
                                                                     rel="noreferrer"
                                                                     className="inline-flex items-center gap-1.5 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 py-1.5 px-3 rounded-lg text-xs font-bold transition-colors"

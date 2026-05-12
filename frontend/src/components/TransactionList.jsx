@@ -23,7 +23,7 @@ export default function TransactionList({
 
   const paginatedTransactions = useMemo(() => {
     const start = (currentPage - 1) * itemsPerPage;
-    return filteredTransactions.slice(start, start + itemsPerPage);
+    return (Array.isArray(filteredTransactions) ? filteredTransactions : []).slice(start, start + itemsPerPage);
   }, [filteredTransactions, currentPage]);
 
   const totalPages = Math.ceil(filteredTransactions.length / itemsPerPage);
