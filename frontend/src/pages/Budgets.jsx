@@ -5,10 +5,7 @@ import Sidebar from '../components/Sidebar';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Success from '../components/Success';
 import { Helmet } from 'react-helmet';
-import axios from 'axios';
-
-// The auth token needs to be sent with these requests
-const API_URL = 'http://localhost:5000/api/budgets';
+import api from '../services/api';
 
 export default function Budgets() {
     const [budgets, setBudgets] = useState([]);
@@ -25,10 +22,7 @@ export default function Budgets() {
 
     const fetchBudgets = async () => {
         try {
-            const token = localStorage.getItem('token');
-            const res = await axios.get(API_URL, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const res = await api.get('/budgets');
             setBudgets(res.data);
         } catch (err) {
             setErrorMsg('Failed to load budgets');
@@ -52,10 +46,7 @@ export default function Budgets() {
         }
 
         try {
-            const token = localStorage.getItem('token');
-            await axios.post(API_URL, { category, limit: Number(limit) }, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.post('/budgets', { category, limit: Number(limit) });
 
             setSuccessMsg("Budget limits updated successfully!");
             setCategory('');
@@ -68,10 +59,7 @@ export default function Budgets() {
 
     const deleteBudget = async (id) => {
         try {
-            const token = localStorage.getItem('token');
-            await axios.delete(`${API_URL}/${id}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/budgets/${id}`);
             fetchBudgets();
         } catch (err) {
             setErrorMsg(err.response?.data?.message || err.message);

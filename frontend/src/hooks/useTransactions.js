@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
-
-const API_URL = 'http://localhost:5000/api/transactions';
+import api from '../services/api';
 
 export function useTransactions() {
   const [transactions, setTransactions] = useState([]);
@@ -11,20 +9,21 @@ export function useTransactions() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
-  const getHeaders = () => {
-    const token = localStorage.getItem('token');
-    return { headers: { Authorization: `Bearer ${token}` } };
-  };
-
   const fetchTransactions = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.get(API_URL, getHeaders());
-      // Adjust structure based on standard response { success: true, data: [...] }
+      const response = await api.get('/transactions');
       const data = response.data.data || response.data;
-      setTransactions(data);
-      calculateDerivedData(data);
+      
+      if (Array.isArray(data)) {
+        setTransactions(data);
+        calculateDerivedData(data);
+      } else {
+        console.error('Expected array of transactions, got:', data);
+        setTransactions([]);
+        setError('Received invalid data format from server');
+      }
     } catch (err) {
       console.error(err);
       setError('Failed to fetch transactions');
@@ -71,7 +70,7 @@ export function useTransactions() {
   const addIncome = useCallback(async (data) => {
     setError(null);
     try {
-      const response = await axios.post(API_URL, { ...data, type: 'income' }, getHeaders());
+      const response = await api.post('/transactions', { ...data, type: 'income' });
       const newTx = response.data.data ? response.data.data : response.data;
       setTransactions(prev => {
         const updated = [newTx, ...prev];
@@ -90,7 +89,7 @@ export function useTransactions() {
   const addExpense = useCallback(async (data) => {
     setError(null);
     try {
-      const response = await axios.post(API_URL, { ...data, type: 'expense' }, getHeaders());
+      const response = await api.post('/transactions', { ...data, type: 'expense' });
       const newTx = response.data.data ? response.data.data : response.data;
       setTransactions(prev => {
         const updated = [newTx, ...prev];
@@ -109,7 +108,7 @@ export function useTransactions() {
   const deleteTransaction = useCallback(async (id) => {
     setError(null);
     try {
-      await axios.delete(`${API_URL}/${id}`, getHeaders());
+      await api.delete(`/transactions/${id}`);
       setTransactions(prev => {
         const updated = prev.filter(t => t.id !== id && t._id !== id);
         calculateDerivedData(updated);
